@@ -1,0 +1,1 @@
+npm warn deprecated lodash.pick@3.1.0: This package is deprecated. Use destructuring assignment syntax instead.

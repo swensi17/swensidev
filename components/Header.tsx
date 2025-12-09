@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -146,17 +146,20 @@ const Header: React.FC = () => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-full bg-white/5"
             >
-              <motion.span 
-                animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 6 : 0 }}
-                className="w-5 h-0.5 bg-white origin-center"
+              <span 
+                className={`w-5 h-0.5 bg-white origin-center transition-transform duration-200 ${
+                  mobileMenuOpen ? 'rotate-45 translate-y-2' : ''
+                }`}
               />
-              <motion.span 
-                animate={{ opacity: mobileMenuOpen ? 0 : 1 }}
-                className="w-5 h-0.5 bg-white"
+              <span 
+                className={`w-5 h-0.5 bg-white transition-opacity duration-200 ${
+                  mobileMenuOpen ? 'opacity-0' : ''
+                }`}
               />
-              <motion.span 
-                animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -6 : 0 }}
-                className="w-5 h-0.5 bg-white origin-center"
+              <span 
+                className={`w-5 h-0.5 bg-white origin-center transition-transform duration-200 ${
+                  mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
+                }`}
               />
             </button>
           </div>
@@ -164,56 +167,41 @@ const Header: React.FC = () => {
       </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/98 backdrop-blur-xl pt-20 px-6 lg:hidden"
-          >
-            <nav className="flex flex-col gap-1 mt-4">
-              {navItems.map((item, i) => (
-                <motion.a
-                  key={i}
-                  href={item.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  onClick={(e) => scrollToSection(e, item.href)}
-                  className={`flex items-center justify-between py-5 border-b border-white/5 text-3xl font-medium ${
-                    activeSection === item.id ? 'text-[#FF3B30]' : 'text-white'
-                  }`}
-                >
-                  {item.label}
-                  <svg className="w-5 h-5 text-neutral-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </motion.a>
-              ))}
-            </nav>
-
-            {/* Mobile CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="absolute bottom-8 left-6 right-6"
+      <div
+        className={`fixed inset-0 z-40 bg-black pt-20 px-6 lg:hidden transition-opacity duration-200 ${
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <nav className="flex flex-col gap-1 mt-4">
+          {navItems.map((item, i) => (
+            <a
+              key={i}
+              href={item.href}
+              onClick={(e) => scrollToSection(e, item.href)}
+              className={`flex items-center justify-between py-5 border-b border-white/5 text-3xl font-medium ${
+                activeSection === item.id ? 'text-[#FF3B30]' : 'text-white'
+              }`}
             >
-              <a
-                href="https://t.me/swensi17"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 w-full py-4 bg-[#FF3B30] text-white font-bold text-sm tracking-widest rounded-xl"
-              >
-                НАПИСАТЬ В TELEGRAM
-              </a>
+              {item.label}
+              <svg className="w-5 h-5 text-neutral-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </a>
+          ))}
+        </nav>
 
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Mobile CTA */}
+        <div className="absolute bottom-8 left-6 right-6">
+          <a
+            href="https://t.me/swensi17"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-3 w-full py-4 bg-[#FF3B30] text-white font-bold text-sm tracking-widest rounded-xl"
+          >
+            НАПИСАТЬ В TELEGRAM
+          </a>
+        </div>
+      </div>
     </>
   );
 };

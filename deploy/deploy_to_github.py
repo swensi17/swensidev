@@ -46,12 +46,12 @@ FILES_TO_DEPLOY = [
     "metadata.json",
     ".gitignore",
     "README.md",
-    "image.png",
 ]
 
 FOLDERS_TO_DEPLOY = [
     "components",
     ".vscode",
+    "public",
 ]
 
 # Файлы, которые НЕ нужно деплоить

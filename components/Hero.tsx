@@ -27,14 +27,14 @@ const Hero: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-16 md:pt-0"
     >
       {/* Background image with bars mask effect */}
       <div className="absolute inset-0 w-full h-full">
         <div 
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{ 
-            backgroundImage: `url(${BASE_URL}image.png)`,
+            backgroundImage: `url(${BASE_URL}image-optimized.webp)`,
             WebkitMaskImage: `repeating-linear-gradient(
               to right,
               transparent 0px,
