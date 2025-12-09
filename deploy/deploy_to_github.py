@@ -310,21 +310,21 @@ def push_to_github(root: Path) -> bool:
             )
             log_info("Remote 'origin' обновлен")
         
-        # Пушим
+        # Пушим (сначала пробуем master, потом main)
         subprocess.run(
-            ["git", "push", "-u", "origin", "main", "--force"],
+            ["git", "push", "-u", "origin", "master", "--force"],
             cwd=root, check=True, capture_output=True
         )
         log_success("Код отправлен на GitHub!")
         return True
     except subprocess.CalledProcessError as e:
-        # Попробуем с веткой master
+        # Попробуем с веткой main
         try:
             subprocess.run(
-                ["git", "push", "-u", "origin", "master", "--force"],
+                ["git", "push", "-u", "origin", "main", "--force"],
                 cwd=root, check=True, capture_output=True
             )
-            log_success("Код отправлен на GitHub (ветка master)!")
+            log_success("Код отправлен на GitHub (ветка main)!")
             return True
         except:
             log_error(f"Ошибка push: {e}")
