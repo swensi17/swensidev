@@ -45,11 +45,14 @@ FILES_TO_DEPLOY = [
     "vite.config.ts",
     "metadata.json",
     ".gitignore",
+    "README.md",
+    "image.png",
 ]
 
 FOLDERS_TO_DEPLOY = [
     "components",
     ".vscode",
+    ".github",
 ]
 
 # Файлы, которые НЕ нужно деплоить
