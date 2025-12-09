@@ -29,26 +29,28 @@ const Hero: React.FC = () => {
       ref={containerRef}
       className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-16 md:pt-0"
     >
-      {/* Background image with bars mask effect */}
+      {/* Background image with bars mask effect - simplified on mobile */}
       <div className="absolute inset-0 w-full h-full">
         <div 
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{ 
             backgroundImage: `url(${BASE_URL}image-optimized.webp)`,
-            WebkitMaskImage: `repeating-linear-gradient(
-              to right,
-              transparent 0px,
-              transparent 8px,
-              black 8px,
-              black calc((100% - 88px) / 10 + 8px)
-            )`,
-            maskImage: `repeating-linear-gradient(
-              to right,
-              transparent 0px,
-              transparent 8px,
-              black 8px,
-              black calc((100% - 88px) / 10 + 8px)
-            )`
+            ...(isMobile ? {} : {
+              WebkitMaskImage: `repeating-linear-gradient(
+                to right,
+                transparent 0px,
+                transparent 8px,
+                black 8px,
+                black calc((100% - 88px) / 10 + 8px)
+              )`,
+              maskImage: `repeating-linear-gradient(
+                to right,
+                transparent 0px,
+                transparent 8px,
+                black 8px,
+                black calc((100% - 88px) / 10 + 8px)
+              )`
+            })
           }}
         />
       </div>
@@ -63,23 +65,27 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Gradient orbs */}
-      <motion.div 
-        animate={{ 
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#FF3B30]/5 rounded-full blur-[150px] pointer-events-none"
-      />
-      <motion.div 
-        animate={{ 
-          y: [0, 20, 0],
-          scale: [1, 1.05, 1]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-white/5 rounded-full blur-[120px] pointer-events-none"
-      />
+      {/* Gradient orbs - hidden on mobile for performance */}
+      {!isMobile && (
+        <>
+          <motion.div 
+            animate={{ 
+              y: [0, -20, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#FF3B30]/5 rounded-full blur-[150px] pointer-events-none"
+          />
+          <motion.div 
+            animate={{ 
+              y: [0, 20, 0],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-white/5 rounded-full blur-[120px] pointer-events-none"
+          />
+        </>
+      )}
 
       {/* 3D floating shapes - hidden on mobile */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">

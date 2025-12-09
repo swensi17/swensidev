@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 """
-🚀 GitHub Repository Deployer
-Автоматический деплой проекта на GitHub с проверкой всех путей и файлов.
-
-Copyright (c) 2025. All Rights Reserved.
-Unauthorized copying, modification, or distribution is strictly prohibited.
+🚀 GitHub Pages Deployer v2.0
+Автоматический билд и деплой на GitHub Pages.
 """
 
 import os
@@ -30,40 +27,8 @@ def load_env_file():
 
 load_env_file()
 
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME", "")
+GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME", "swensi17")
 REPO_NAME = os.environ.get("REPO_NAME", "swensidev")
-
-# Файлы и папки для деплоя (относительно корня проекта)
-FILES_TO_DEPLOY = [
-    "App.tsx",
-    "index.tsx",
-    "index.html",
-    "package.json",
-    "package-lock.json",
-    "tsconfig.json",
-    "vite.config.ts",
-    "metadata.json",
-    ".gitignore",
-    "README.md",
-]
-
-FOLDERS_TO_DEPLOY = [
-    "components",
-    ".vscode",
-    "public",
-]
-
-# Файлы, которые НЕ нужно деплоить
-EXCLUDE_PATTERNS = [
-    "node_modules",
-    ".env.local",
-    ".env",
-    "__pycache__",
-    "*.pyc",
-    ".git",
-    "deploy",
-]
 
 
 # ============================================================================
@@ -71,7 +36,6 @@ EXCLUDE_PATTERNS = [
 # ============================================================================
 
 class Colors:
-    """ANSI цвета для красивого вывода"""
     GREEN = "\033[92m"
     RED = "\033[91m"
     YELLOW = "\033[93m"
@@ -81,254 +45,118 @@ class Colors:
     BOLD = "\033[1m"
 
 
-def log_success(msg: str) -> None:
-    print(f"{Colors.GREEN}✓{Colors.RESET} {msg}")
+def log_success(msg): print(f"{Colors.GREEN}✓{Colors.RESET} {msg}")
+def log_error(msg): print(f"{Colors.RED}✗{Colors.RESET} {msg}")
+def log_warning(msg): print(f"{Colors.YELLOW}⚠{Colors.RESET} {msg}")
+def log_info(msg): print(f"{Colors.BLUE}ℹ{Colors.RESET} {msg}")
+
+def log_header(msg):
+    print(f"\n{Colors.CYAN}{Colors.BOLD}{'='*50}{Colors.RESET}")
+    print(f"{Colors.CYAN}{Colors.BOLD}{msg:^50}{Colors.RESET}")
+    print(f"{Colors.CYAN}{Colors.BOLD}{'='*50}{Colors.RESET}\n")
 
 
-def log_error(msg: str) -> None:
-    print(f"{Colors.RED}✗{Colors.RESET} {msg}")
-
-
-def log_warning(msg: str) -> None:
-    print(f"{Colors.YELLOW}⚠{Colors.RESET} {msg}")
-
-
-def log_info(msg: str) -> None:
-    print(f"{Colors.BLUE}ℹ{Colors.RESET} {msg}")
-
-
-def log_header(msg: str) -> None:
-    print(f"\n{Colors.CYAN}{Colors.BOLD}{'='*60}{Colors.RESET}")
-    print(f"{Colors.CYAN}{Colors.BOLD}{msg:^60}{Colors.RESET}")
-    print(f"{Colors.CYAN}{Colors.BOLD}{'='*60}{Colors.RESET}\n")
-
-
-# ============================================================================
-# ПРОВЕРКИ
-# ============================================================================
-
-def get_project_root() -> Path:
-    """Получить корневую директорию проекта"""
-    return Path(__file__).parent.parent.resolve()
-
-
-def check_paths() -> tuple[bool, list[str], list[str]]:
-    """
-    Проверить все пути файлов и папок.
-    Возвращает: (все_ок, найденные_файлы, отсутствующие_файлы)
-    """
-    root = get_project_root()
-    found = []
-    missing = []
-    
-    log_header("ПРОВЕРКА ПУТЕЙ")
-    log_info(f"Корень проекта: {root}")
-    
-    # Проверка файлов
-    print(f"\n{Colors.BOLD}Файлы:{Colors.RESET}")
-    for file in FILES_TO_DEPLOY:
-        path = root / file
-        if path.exists():
-            log_success(f"{file}")
-            found.append(str(path))
-        else:
-            log_error(f"{file} - НЕ НАЙДЕН")
-            missing.append(file)
-    
-    # Проверка папок
-    print(f"\n{Colors.BOLD}Папки:{Colors.RESET}")
-    for folder in FOLDERS_TO_DEPLOY:
-        path = root / folder
-        if path.exists() and path.is_dir():
-            file_count = sum(1 for _ in path.rglob("*") if _.is_file())
-            log_success(f"{folder}/ ({file_count} файлов)")
-            found.append(str(path))
-        else:
-            log_error(f"{folder}/ - НЕ НАЙДЕНА")
-            missing.append(folder)
-    
-    return len(missing) == 0, found, missing
-
-
-def check_git_installed() -> bool:
-    """Проверить установлен ли Git"""
+def run_cmd(cmd, cwd=None, check=True, capture=False):
+    """Выполнить команду"""
     try:
-        subprocess.run(["git", "--version"], capture_output=True, check=True)
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
+        # На Windows нужен shell=True для npm/npx
+        result = subprocess.run(
+            cmd,
+            cwd=cwd,
+            check=check,
+            capture_output=capture,
+            text=True,
+            shell=True
+        )
+        return True, result.stdout if capture else ""
+    except subprocess.CalledProcessError as e:
+        return False, e.stderr if capture else str(e)
+    except FileNotFoundError as e:
+        return False, str(e)
 
 
-def check_credentials() -> tuple[bool, list[str]]:
-    """Проверить наличие учетных данных GitHub"""
-    missing = []
-    
-    if not GITHUB_TOKEN:
-        missing.append("GITHUB_TOKEN")
-    if not GITHUB_USERNAME:
-        missing.append("GITHUB_USERNAME")
-    
-    return len(missing) == 0, missing
+def get_root():
+    return Path(__file__).parent.parent.resolve()
 
 
 # ============================================================================
 # ДЕПЛОЙ
 # ============================================================================
 
-def init_git_repo(root: Path) -> bool:
-    """Инициализировать Git репозиторий"""
-    try:
-        git_dir = root / ".git"
-        if not git_dir.exists():
-            subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)
-            log_success("Git репозиторий инициализирован")
-        else:
-            log_info("Git репозиторий уже существует")
-        return True
-    except subprocess.CalledProcessError as e:
-        log_error(f"Ошибка инициализации Git: {e}")
-        return False
+def check_node():
+    """Проверить Node.js"""
+    ok, _ = run_cmd(["node", "--version"], capture=True)
+    return ok
 
 
-def create_github_repo() -> bool:
-    """Создать репозиторий на GitHub через API"""
-    import urllib.request
-    import json
-    
-    url = "https://api.github.com/user/repos"
-    data = json.dumps({
-        "name": REPO_NAME,
-        "description": "🚀 SWENSI DEV - Full-Stack Разработчик | React + TypeScript Portfolio",
-        "private": False,
-        "auto_init": False,
-        "homepage": f"https://{GITHUB_USERNAME}.github.io/{REPO_NAME}"
-    }).encode()
-    
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-    }
-    
-    try:
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-        with urllib.request.urlopen(req) as response:
-            if response.status == 201:
-                log_success(f"Репозиторий '{REPO_NAME}' создан на GitHub")
-                return True
-    except urllib.error.HTTPError as e:
-        if e.code == 422:
-            log_warning(f"Репозиторий '{REPO_NAME}' уже существует")
-            return True
-        log_error(f"Ошибка создания репозитория: {e.code} - {e.reason}")
-    except Exception as e:
-        log_error(f"Ошибка: {e}")
-    
-    return False
+def check_npm():
+    """Проверить npm"""
+    ok, _ = run_cmd(["npm", "--version"], capture=True)
+    return ok
 
 
-def add_and_commit(root: Path) -> bool:
-    """Добавить файлы и создать коммит"""
-    try:
-        # Добавляем все файлы
-        subprocess.run(["git", "add", "."], cwd=root, check=True, capture_output=True)
-        log_success("Файлы добавлены в индекс")
-        
-        # Создаем коммит
-        commit_msg = f"🚀 Deploy: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        subprocess.run(
-            ["git", "commit", "-m", commit_msg],
-            cwd=root, check=True, capture_output=True
-        )
-        log_success(f"Коммит создан: {commit_msg}")
-        return True
-    except subprocess.CalledProcessError as e:
-        if b"nothing to commit" in e.stdout or b"nothing to commit" in e.stderr:
-            log_warning("Нет изменений для коммита")
-            return True
-        log_error(f"Ошибка коммита: {e}")
-        return False
-
-
-def enable_github_pages() -> bool:
-    """Включить GitHub Pages через API"""
-    import urllib.request
-    import json
-    
-    url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{REPO_NAME}/pages"
-    data = json.dumps({
-        "build_type": "workflow"
-    }).encode()
-    
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github+json",
-        "Content-Type": "application/json"
-    }
-    
-    try:
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-        with urllib.request.urlopen(req) as response:
-            if response.status in [201, 204]:
-                log_success("GitHub Pages включен!")
-                return True
-    except urllib.error.HTTPError as e:
-        if e.code == 409:
-            log_warning("GitHub Pages уже включен")
-            return True
-        elif e.code == 422:
-            log_warning("GitHub Pages требует настройки workflow")
-        else:
-            log_warning(f"GitHub Pages: {e.code} - настройте вручную в Settings > Pages")
-    except Exception as e:
-        log_warning(f"GitHub Pages: {e}")
-    
-    return False
-
-
-def push_to_github(root: Path) -> bool:
-    """Отправить изменения на GitHub"""
-    remote_url = f"https://{GITHUB_TOKEN}@github.com/{GITHUB_USERNAME}/{REPO_NAME}.git"
-    
-    try:
-        # Проверяем/добавляем remote
-        result = subprocess.run(
-            ["git", "remote", "get-url", "origin"],
-            cwd=root, capture_output=True
-        )
-        
-        if result.returncode != 0:
-            subprocess.run(
-                ["git", "remote", "add", "origin", remote_url],
-                cwd=root, check=True, capture_output=True
-            )
-            log_success("Remote 'origin' добавлен")
-        else:
-            subprocess.run(
-                ["git", "remote", "set-url", "origin", remote_url],
-                cwd=root, check=True, capture_output=True
-            )
-            log_info("Remote 'origin' обновлен")
-        
-        # Пушим (сначала пробуем master, потом main)
-        subprocess.run(
-            ["git", "push", "-u", "origin", "master", "--force"],
-            cwd=root, check=True, capture_output=True
-        )
-        log_success("Код отправлен на GitHub!")
-        return True
-    except subprocess.CalledProcessError as e:
-        # Попробуем с веткой main
-        try:
-            subprocess.run(
-                ["git", "push", "-u", "origin", "main", "--force"],
-                cwd=root, check=True, capture_output=True
-            )
-            log_success("Код отправлен на GitHub (ветка main)!")
-            return True
-        except:
-            log_error(f"Ошибка push: {e}")
+def install_deps(root):
+    """Установить зависимости если нужно"""
+    node_modules = root / "node_modules"
+    if not node_modules.exists():
+        log_info("Устанавливаю зависимости...")
+        ok, err = run_cmd(["npm", "install"], cwd=root)
+        if not ok:
+            log_error(f"Ошибка установки: {err}")
             return False
+        log_success("Зависимости установлены")
+    return True
+
+
+def build_project(root):
+    """Собрать проект"""
+    log_info("Собираю проект...")
+    ok, err = run_cmd(["npm", "run", "build"], cwd=root)
+    if not ok:
+        log_error(f"Ошибка сборки: {err}")
+        return False
+    log_success("Проект собран")
+    return True
+
+
+def deploy_to_gh_pages(root):
+    """Деплой на GitHub Pages через gh-pages"""
+    log_info("Деплою на GitHub Pages...")
+    
+    # Проверяем есть ли gh-pages
+    ok, _ = run_cmd(["npx", "gh-pages", "--version"], cwd=root, capture=True)
+    
+    # Деплоим
+    ok, err = run_cmd(["npx", "gh-pages", "-d", "dist"], cwd=root, capture=True)
+    if not ok:
+        log_error(f"Ошибка деплоя: {err}")
+        return False
+    
+    log_success("Задеплоено на GitHub Pages!")
+    return True
+
+
+def commit_source(root):
+    """Закоммитить исходники в master"""
+    log_info("Сохраняю исходники...")
+    
+    run_cmd(["git", "add", "."], cwd=root)
+    
+    commit_msg = f"🚀 Update: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    ok, _ = run_cmd(["git", "commit", "-m", commit_msg], cwd=root, check=False, capture=True)
+    
+    # Пушим исходники
+    ok, err = run_cmd(["git", "push", "origin", "master"], cwd=root, check=False, capture=True)
+    if not ok:
+        # Пробуем main
+        ok, err = run_cmd(["git", "push", "origin", "main"], cwd=root, check=False, capture=True)
+    
+    if ok:
+        log_success("Исходники сохранены")
+    else:
+        log_warning("Не удалось запушить исходники (возможно нет изменений)")
+    
+    return True
 
 
 # ============================================================================
@@ -336,85 +164,70 @@ def push_to_github(root: Path) -> bool:
 # ============================================================================
 
 def main():
-    """Главная функция деплоя"""
     print(f"""
 {Colors.CYAN}{Colors.BOLD}
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                           ║
-    ║   🚀 GITHUB DEPLOYER v1.0                                 ║
-    ║   Автоматический деплой проекта на GitHub                 ║
-    ║                                                           ║
-    ╚═══════════════════════════════════════════════════════════╝
+  ╔════════════════════════════════════════════╗
+  ║  🚀 GITHUB PAGES DEPLOYER v2.0             ║
+  ║  Билд + Деплой в одну команду              ║
+  ╚════════════════════════════════════════════╝
 {Colors.RESET}""")
+
+    root = get_root()
     
-    root = get_project_root()
+    # Проверки
+    log_header("ПРОВЕРКА")
     
-    # 1. Проверка путей
-    paths_ok, found, missing = check_paths()
+    if not check_node():
+        log_error("Node.js не установлен!")
+        sys.exit(1)
+    log_success("Node.js найден")
     
-    if not paths_ok:
-        log_header("ОШИБКА")
-        log_error(f"Отсутствуют файлы/папки: {', '.join(missing)}")
-        log_info("Исправьте пути и запустите скрипт снова")
+    if not check_npm():
+        log_error("npm не установлен!")
+        sys.exit(1)
+    log_success("npm найден")
+    
+    # Установка зависимостей
+    log_header("ПОДГОТОВКА")
+    
+    if not install_deps(root):
         sys.exit(1)
     
-    log_success(f"Все пути проверены: {len(found)} элементов готово к деплою")
+    # Билд
+    log_header("СБОРКА")
     
-    # 2. Проверка Git
-    log_header("ПРОВЕРКА ОКРУЖЕНИЯ")
-    
-    if not check_git_installed():
-        log_error("Git не установлен!")
-        sys.exit(1)
-    log_success("Git установлен")
-    
-    # 3. Проверка учетных данных
-    creds_ok, missing_creds = check_credentials()
-    
-    if not creds_ok:
-        log_header("ТРЕБУЮТСЯ УЧЕТНЫЕ ДАННЫЕ")
-        log_warning("Установите переменные окружения:")
-        for cred in missing_creds:
-            print(f"  • {cred}")
-        print(f"\n{Colors.YELLOW}Пример:{Colors.RESET}")
-        print(f"  set GITHUB_TOKEN=ghp_xxxxxxxxxxxx")
-        print(f"  set GITHUB_USERNAME=your_username")
-        print(f"  set REPO_NAME=pool-landing")
+    if not build_project(root):
         sys.exit(1)
     
-    log_success("Учетные данные найдены")
+    # Проверяем что dist создан
+    dist = root / "dist"
+    if not dist.exists():
+        log_error("Папка dist не создана!")
+        sys.exit(1)
     
-    # 4. Деплой
+    files = list(dist.rglob("*"))
+    log_success(f"Собрано {len([f for f in files if f.is_file()])} файлов")
+    
+    # Коммит исходников
+    log_header("СОХРАНЕНИЕ")
+    commit_source(root)
+    
+    # Деплой
     log_header("ДЕПЛОЙ")
     
-    if not init_git_repo(root):
+    if not deploy_to_gh_pages(root):
         sys.exit(1)
     
-    if not create_github_repo():
-        log_warning("Продолжаем с существующим репозиторием...")
-    
-    if not add_and_commit(root):
-        sys.exit(1)
-    
-    if not push_to_github(root):
-        sys.exit(1)
-    
-    # 5. Включаем GitHub Pages
-    log_header("GITHUB PAGES")
-    enable_github_pages()
-    
-    # 6. Успех!
+    # Готово
     log_header("ГОТОВО!")
     print(f"""
 {Colors.GREEN}{Colors.BOLD}
-    ✓ Проект успешно задеплоен!
-    
-    📦 Репозиторий: https://github.com/{GITHUB_USERNAME}/{REPO_NAME}
-    🌐 GitHub Pages: https://{GITHUB_USERNAME}.github.io/{REPO_NAME}
-    
-    ⚠️  GitHub Pages может занять 1-2 минуты для активации
-    
-{Colors.RESET}""")
+  ✓ Сайт успешно задеплоен!
+  
+  🌐 {Colors.RESET}https://{GITHUB_USERNAME}.github.io/{REPO_NAME}
+  
+{Colors.YELLOW}  ⏱  Подожди 1-2 минуты для обновления{Colors.RESET}
+""")
 
 
 if __name__ == "__main__":
