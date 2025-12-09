@@ -209,10 +209,7 @@ const Header: React.FC = () => {
               >
                 НАПИСАТЬ В TELEGRAM
               </a>
-              <div className="flex items-center justify-center gap-2 mt-4 text-xs font-mono text-neutral-600">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                <span>ONLINE</span>
-              </div>
+
             </motion.div>
           </motion.div>
         )}

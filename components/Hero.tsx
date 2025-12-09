@@ -5,15 +5,24 @@ const BASE_URL = import.meta.env.BASE_URL || '/';
 
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
-  // Parallax effects
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
+  // Parallax effects - disabled on mobile
+  const titleY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, 200]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, isMobile ? 1 : 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, isMobile ? 1 : 0.9]);
 
   return (
     <section 
@@ -72,8 +81,8 @@ const Hero: React.FC = () => {
         className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-white/5 rounded-full blur-[120px] pointer-events-none"
       />
 
-      {/* 3D floating shapes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* 3D floating shapes - hidden on mobile */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         <motion.div
           animate={{ 
             rotateX: [0, 360],
@@ -110,7 +119,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-sm md:text-base tracking-[0.3em] text-neutral-400 uppercase mb-6"
+          className="text-[10px] sm:text-sm md:text-base tracking-[0.2em] sm:tracking-[0.3em] text-neutral-400 uppercase mb-4 sm:mb-6"
         >
           Full-Stack Разработчик
         </motion.p>
@@ -120,7 +129,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-7xl md:text-9xl lg:text-[12rem] font-black tracking-tighter leading-[0.85] text-white mb-4"
+          className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] text-white mb-2 sm:mb-4"
         >
           SWENSI
         </motion.h1>
@@ -130,7 +139,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-lg md:text-xl tracking-[0.2em] text-neutral-400 uppercase mb-16"
+          className="text-sm sm:text-lg md:text-xl tracking-[0.15em] sm:tracking-[0.2em] text-neutral-400 uppercase mb-10 sm:mb-16"
         >
           Разработка под ключ
         </motion.p>
@@ -140,27 +149,27 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
         >
           <a 
             href="https://t.me/swensi17" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group px-8 py-4 bg-[#FF3B30] text-white font-bold text-sm tracking-widest uppercase flex items-center gap-3 hover:bg-white hover:text-black transition-colors duration-300"
+            className="group px-6 sm:px-8 py-3 sm:py-4 bg-[#FF3B30] text-white font-bold text-xs sm:text-sm tracking-widest uppercase flex items-center gap-2 sm:gap-3 hover:bg-white hover:text-black transition-colors duration-300 w-full sm:w-auto justify-center"
           >
-            СВЯЗАТЬСЯ
-            <svg className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            НАПИСАТЬ
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M7 17L17 7M17 7H7M17 7V17" />
             </svg>
           </a>
           <a 
-            href="https://t.me/amirjanjik" 
+            href="https://t.me/swensiorder" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group px-8 py-4 border border-white/20 text-white font-bold text-sm tracking-widest uppercase flex items-center gap-3 hover:bg-white hover:text-black transition-colors duration-300"
+            className="hidden sm:flex group px-6 sm:px-8 py-3 sm:py-4 bg-white text-black font-bold text-xs sm:text-sm tracking-widest uppercase items-center gap-2 sm:gap-3 hover:bg-[#FF3B30] hover:text-white transition-colors duration-300"
           >
-            ОТЗЫВЫ 10К+
-            <svg className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            АРХИВ
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M7 17L17 7M17 7H7M17 7V17" />
             </svg>
           </a>

@@ -97,7 +97,7 @@ const StepNameItem: React.FC<{
   return (
     <motion.div
       style={{ color }}
-      className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tighter leading-[0.95] text-left select-none cursor-default transition-colors duration-300 hover:text-[#FF3B30] flex items-center justify-start gap-4"
+      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tighter leading-[0.95] text-left select-none cursor-default transition-colors duration-300 hover:text-[#FF3B30] flex items-center justify-start gap-4"
     >
       <span>{title}</span>
     </motion.div>
@@ -106,10 +106,76 @@ const StepNameItem: React.FC<{
 
 const Process: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
+
+  // На мобильных показываем стильную горизонтальную цепочку
+  if (isMobile) {
+    return (
+      <section id="process" className="relative bg-[#050505] border-t border-white/5 py-16 px-6">
+        <div className="flex justify-between items-center mb-8">
+          <span className="text-neutral-600 text-xs tracking-[0.3em] font-mono">[ 03 / 09 ]</span>
+          <span className="text-neutral-600 text-xs tracking-[0.3em] font-mono">ПРОЦЕСС</span>
+        </div>
+        
+        <div className="mb-12">
+          <span className="text-[#FF3B30] text-xs font-mono tracking-[0.3em] block mb-3">[ МОЙ ПРОЦЕСС ]</span>
+          <h2 className="text-3xl font-bold tracking-tight text-white">Как я работаю</h2>
+        </div>
+        
+        {/* Steps chain */}
+        <div className="space-y-0">
+          {steps.map((step, index) => (
+            <motion.div 
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.15 }}
+              className="relative"
+            >
+              {/* Step card */}
+              <div className="flex gap-4">
+                {/* Left side - number and line */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF3B30] to-[#FF6B5B] flex items-center justify-center shadow-lg shadow-[#FF3B30]/20">
+                    <span className="text-white font-bold text-lg">{step.num}</span>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className="w-[2px] h-full min-h-[80px] bg-gradient-to-b from-[#FF3B30]/50 to-white/10 my-2" />
+                  )}
+                </div>
+                
+                {/* Right side - content */}
+                <div className="flex-1 pb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
+                  <p className="text-neutral-400 text-sm leading-relaxed mb-4">{step.desc}</p>
+                  
+                  {/* Features */}
+                  <div className="flex flex-wrap gap-2">
+                    {step.features.map((f, i) => (
+                      <span key={i} className="px-3 py-1 text-[10px] font-mono tracking-wider bg-white/5 text-neutral-400 border border-white/10 rounded-full">{f}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 

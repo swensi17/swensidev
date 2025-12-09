@@ -66,28 +66,27 @@ const Footer: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-[#FF3B30] text-xs font-mono tracking-widest block mb-6">
+              <span className="text-[#FF3B30] text-xs font-mono tracking-widest block mb-4 md:mb-6 text-center lg:text-left">
                 [ РАЗРАБОТЧИК ]
               </span>
               
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6">
-                SWENSI
-                <span className="block text-neutral-600">.DEV</span>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95] mb-6 text-center lg:text-left">
+                SWENSI<span className="text-neutral-600">.DEV</span>
               </h2>
               
-              <p className="text-neutral-500 max-w-sm text-sm leading-relaxed mb-8">
+              <p className="text-neutral-500 max-w-sm text-sm leading-relaxed mb-8 text-center lg:text-left mx-auto lg:mx-0">
                 Разработка под ключ. Боты, веб-приложения, мобильные решения. 
                 Качество и скорость без компромиссов.
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-4 gap-4 pt-8 border-t border-white/5">
+              <div className="grid grid-cols-4 gap-4 pt-6 md:pt-8 border-t border-white/5">
                 {stats.map((stat, i) => (
-                  <div key={i}>
-                    <div className="text-xl md:text-2xl font-light text-white tabular-nums">
+                  <div key={i} className="text-center lg:text-left">
+                    <div className="text-base sm:text-xl md:text-2xl font-light text-white tabular-nums">
                       {stat.value}
                     </div>
-                    <div className="mt-1 text-[9px] font-mono text-neutral-600 tracking-widest">
+                    <div className="mt-1 text-[7px] sm:text-[9px] font-mono text-neutral-600 tracking-widest">
                       {stat.label}
                     </div>
                   </div>
@@ -116,7 +115,7 @@ const Footer: React.FC = () => {
                     <span className="text-xs font-mono tracking-widest text-neutral-600 group-hover:text-[#FF3B30] transition-colors">
                       [ 0{index + 1} ]
                     </span>
-                    <span className="text-2xl md:text-3xl font-medium tracking-tight text-neutral-300 group-hover:text-white transition-colors">
+                    <span className="text-xl sm:text-2xl md:text-3xl font-medium tracking-tight text-neutral-300 group-hover:text-white transition-colors">
                       {link.label}
                     </span>
                   </div>
@@ -140,50 +139,46 @@ const Footer: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+              className="flex flex-col items-center md:flex-row md:items-center md:justify-between gap-3 md:gap-6"
             >
-              <div>
-                <p className="text-neutral-400 text-sm mb-2">Готов обсудить ваш проект?</p>
-                <p className="text-white text-lg font-medium">Напишите — отвечу в течение часа</p>
+              <div className="text-center md:text-left mb-1 md:mb-0">
+                <p className="text-neutral-400 text-xs md:text-sm">Готов обсудить ваш проект?</p>
+                <p className="text-white text-sm md:text-lg font-medium">Напишите — отвечу в течение часа</p>
               </div>
               
-              <a
-                href="https://t.me/swensi17"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-3 px-8 py-4 bg-[#FF3B30] text-white font-bold text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300"
-              >
-                НАПИСАТЬ
-                <svg className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-              </a>
+              <div className="flex flex-row gap-2 w-full sm:w-auto">
+                <a
+                  href="https://t.me/swensi17"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-8 py-3 sm:py-4 bg-[#FF3B30] text-white font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300"
+                >
+                  НАПИСАТЬ
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </a>
+                <a
+                  href="https://t.me/swensiorder"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-8 py-3 sm:py-4 bg-white text-black font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-[#FF3B30] hover:text-white transition-all duration-300"
+                >
+                  АРХИВ
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </a>
+              </div>
             </motion.div>
           </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="relative z-10 border-t border-white/5 px-6 md:px-12 py-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
-          {/* Status */}
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-neutral-500 tracking-widest">ONLINE</span>
-          </div>
-
-          {/* Time */}
-          <div className="flex items-center gap-4 text-neutral-600">
-            <span>{time.local}</span>
-            <span className="w-1 h-1 rounded-full bg-[#FF3B30]" />
-            <span>{time.day}</span>
-          </div>
-
-          {/* Copyright */}
-          <span className="text-neutral-600 tracking-widest">© 2025 SWENSI</span>
+      <div className="relative z-10 border-t border-white/5 px-6 md:px-12 py-3 md:py-6">
+        <div className="text-center text-[9px] md:text-xs font-mono text-neutral-600 tracking-widest">
+          © 2025-2026 SWENSI. Все права защищены.
         </div>
       </div>
     </footer>

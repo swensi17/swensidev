@@ -40,9 +40,133 @@ const technologies = [
   },
 ];
 
+// Mobile carousel with touch swipe and auto-scroll
+const MobileCarousel: React.FC<{ technologies: typeof technologies }> = ({ technologies }) => {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [isUserScrolling, setIsUserScrolling] = React.useState(false);
+  
+  // Auto-scroll
+  React.useEffect(() => {
+    if (isUserScrolling) return;
+    
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const nextIndex = (activeIndex + 1) % technologies.length;
+        const cardWidth = 280 + 16; // card width + gap
+        scrollRef.current.scrollTo({
+          left: nextIndex * cardWidth,
+          behavior: 'smooth'
+        });
+        setActiveIndex(nextIndex);
+      }
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [activeIndex, isUserScrolling, technologies.length]);
+  
+  // Handle scroll to update active index
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const cardWidth = 280 + 16;
+      const newIndex = Math.round(scrollRef.current.scrollLeft / cardWidth);
+      setActiveIndex(Math.min(newIndex, technologies.length - 1));
+    }
+  };
+  
+  // Pause auto-scroll on touch
+  const handleTouchStart = () => setIsUserScrolling(true);
+  const handleTouchEnd = () => {
+    setTimeout(() => setIsUserScrolling(false), 5000); // Resume after 5s
+  };
+
+  return (
+    <div className="pb-8">
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-4 px-[calc(50vw-140px)]"
+        style={{ 
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+        onScroll={handleScroll}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+        {technologies.map((tech, index) => (
+          <motion.div
+            key={index}
+            className="flex-shrink-0 w-[280px] border border-white/10 bg-gradient-to-b from-neutral-900 to-black p-5"
+            style={{ scrollSnapAlign: 'center' }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[#FF3B30] text-[10px] font-mono tracking-[0.2em]">[ {tech.category.toUpperCase()} ]</span>
+              <span className="text-neutral-600 text-[10px] font-mono">{String(index + 1).padStart(2, '0')}</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">{tech.name}</h3>
+            <p className="text-neutral-400 text-sm leading-relaxed mb-4">{tech.desc}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {tech.features.map((f, i) => (
+                <span key={i} className="px-2 py-1 text-[9px] font-mono bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20 rounded">{f}</span>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      
+      {/* Progress dots */}
+      <div className="flex items-center justify-center gap-2 mt-4">
+        {technologies.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              if (scrollRef.current) {
+                const cardWidth = 260 + 16;
+                scrollRef.current.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
+                setActiveIndex(i);
+              }
+            }}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === activeIndex ? 'w-6 bg-[#FF3B30]' : 'w-1.5 bg-white/20'
+            }`}
+          />
+        ))}
+      </div>
+      
+      {/* Swipe hint */}
+      <div className="flex items-center justify-center gap-2 mt-3 text-neutral-600">
+        <motion.div
+          animate={{ x: [0, 5, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </motion.div>
+        <span className="text-[9px] font-mono tracking-widest">СВАЙП</span>
+      </div>
+    </div>
+  );
+};
+
 const DavidGoliath: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [[page, direction], setPage] = useState([0, 0]);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const paginate = (newDirection: number) => {
     const newIndex = (currentIndex + newDirection + technologies.length) % technologies.length;
@@ -92,7 +216,7 @@ const DavidGoliath: React.FC = () => {
   };
 
   return (
-    <section className="relative bg-[#050505] py-20 md:py-28 overflow-hidden border-t border-white/5">
+    <section className="relative bg-[#050505] py-12 md:py-28 overflow-hidden border-t border-white/5">
       {/* Header */}
       <div className="flex justify-between items-center px-6 md:px-12 pb-8">
         <span className="text-neutral-600 text-xs tracking-[0.3em] font-mono">[ 04 / 09 ]</span>
@@ -100,7 +224,7 @@ const DavidGoliath: React.FC = () => {
       </div>
 
       {/* Бегущая строка */}
-      <div className="py-6 md:py-8 overflow-hidden border-y border-white/5 mb-16">
+      <div className="py-4 md:py-8 overflow-hidden border-y border-white/5 mb-8 md:mb-16">
         <motion.div 
           className="flex whitespace-nowrap"
           animate={{ x: ['0%', '-50%'] }}
@@ -125,7 +249,11 @@ const DavidGoliath: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* 3D Carousel */}
+      {/* Mobile: Touch swipeable cards with auto-scroll */}
+      {isMobile ? (
+        <MobileCarousel technologies={technologies} />
+      ) : (
+      /* Desktop: 3D Carousel */
       <div className="relative px-4 md:px-8">
         <div className="flex items-center justify-center">
           
@@ -184,7 +312,7 @@ const DavidGoliath: React.FC = () => {
                       transformStyle: 'preserve-3d',
                       position: 'absolute'
                     }}
-                    className={`w-[300px] md:w-[360px] ${position !== 0 ? 'hidden md:block' : ''}`}
+                    className={`w-[280px] sm:w-[300px] md:w-[360px] ${position !== 0 ? 'hidden md:block' : ''}`}
                   >
                     {/* Card */}
                     <div 
@@ -211,7 +339,7 @@ const DavidGoliath: React.FC = () => {
                         </div>
 
                         {/* Tech name */}
-                        <h3 className={`text-4xl md:text-5xl font-bold tracking-tight mb-6 ${isCenter ? 'text-white' : 'text-neutral-700'}`}>
+                        <h3 className={`text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 ${isCenter ? 'text-white' : 'text-neutral-700'}`}>
                           {tech.name}
                         </h3>
 
@@ -289,6 +417,7 @@ const DavidGoliath: React.FC = () => {
           ))}
         </div>
       </div>
+      )}
     </section>
   );
 };

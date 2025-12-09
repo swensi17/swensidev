@@ -131,7 +131,66 @@ const SecurityDashboard: React.FC = () => {
   );
 };
 
+// Animated counter component
+const AnimatedCounter: React.FC<{ target: number; suffix?: string; color?: string }> = ({ target, suffix = '', color = 'text-white' }) => {
+  const [count, setCount] = React.useState(0);
+  const [hasAnimated, setHasAnimated] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          const duration = 2000;
+          const start = Date.now();
+          const animate = () => {
+            const elapsed = Date.now() - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(target * ease));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          animate();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, hasAnimated]);
+
+  return <div ref={ref} className={`text-2xl font-light ${color} tabular-nums`}>{count}{suffix}</div>;
+};
+
+// Mobile stats with animated counters
+const MobileStats: React.FC = () => (
+  <div className="grid grid-cols-3 gap-4 border border-white/5 p-6 bg-white/[0.01]">
+    <div className="text-center">
+      <AnimatedCounter target={147} color="text-white" />
+      <div className="text-[9px] font-mono text-neutral-600 tracking-widest mt-1">ПРОЕКТОВ</div>
+    </div>
+    <div className="text-center border-x border-white/5">
+      <AnimatedCounter target={99} suffix=".9%" color="text-[#FF3B30]" />
+      <div className="text-[9px] font-mono text-neutral-600 tracking-widest mt-1">UPTIME</div>
+    </div>
+    <div className="text-center">
+      <AnimatedCounter target={0} color="text-green-500" />
+      <div className="text-[9px] font-mono text-neutral-600 tracking-widest mt-1">УГРОЗ</div>
+    </div>
+  </div>
+);
+
 const SecuritySection: React.FC = () => {
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const features = [
     { num: '01', title: 'Консультация', desc: 'Обсуждаем задачу и подбираем оптимальное решение' },
     { num: '02', title: 'Договор NDA', desc: 'Подписываем соглашение о конфиденциальности' },
@@ -185,7 +244,7 @@ const SecuritySection: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 px-6 md:px-12 py-12 lg:py-24 min-h-[80vh] items-center">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 px-6 md:px-12 py-8 lg:py-24 min-h-0 lg:min-h-[80vh] items-center">
         
         {/* Left side - Content */}
         <div className="flex flex-col justify-center">
@@ -232,7 +291,7 @@ const SecuritySection: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-2 gap-4 mb-10"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"
           >
             {features.map((feature, index) => (
               <div 
@@ -269,12 +328,14 @@ const SecuritySection: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center lg:text-left"
           >
+            <p className="text-neutral-500 text-xs mb-2 lg:hidden">Узнайте больше о безопасности</p>
             <a 
               href="https://t.me/swensi17" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-transparent border border-white/20 text-white font-bold text-sm tracking-widest uppercase hover:bg-[#FF3B30] hover:border-[#FF3B30] transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-2 sm:gap-3 px-5 sm:px-8 py-3 sm:py-4 bg-transparent border border-white/20 text-white font-bold text-[10px] sm:text-sm tracking-widest uppercase hover:bg-[#FF3B30] hover:border-[#FF3B30] transition-all duration-300 w-full sm:w-auto"
             >
               УЗНАТЬ ПОДРОБНЕЕ
               <svg className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -284,10 +345,14 @@ const SecuritySection: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Right side - Security Dashboard */}
-        <div className="relative h-[400px] md:h-[500px] lg:h-[550px] border border-white/5 bg-white/[0.01]">
-          <SecurityDashboard />
-        </div>
+        {/* Right side - Security Dashboard - hidden on mobile, simplified stats shown instead */}
+        {isMobile ? (
+          <MobileStats />
+        ) : (
+          <div className="relative h-[400px] md:h-[500px] lg:h-[550px] border border-white/5 bg-white/[0.01]">
+            <SecurityDashboard />
+          </div>
+        )}
       </div>
     </section>
   );

@@ -9,7 +9,7 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({ text, onClick, className = '', variant = 'outline' }) => {
-  const baseStyles = "group relative uppercase tracking-widest text-xs font-bold py-4 px-8 flex items-center gap-4 transition-all duration-300";
+  const baseStyles = "group relative uppercase tracking-widest text-[10px] sm:text-xs font-bold py-3 sm:py-4 px-5 sm:px-8 flex items-center justify-center gap-2 sm:gap-4 transition-all duration-300 w-full sm:w-auto";
   
   const variants = {
     outline: "border border-white/30 text-white hover:bg-white hover:text-black",
@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({ text, onClick, className = '', v
   return (
     <button onClick={onClick} className={`${baseStyles} ${variants[variant]} ${className}`}>
       <span>{text}</span>
-      <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+      <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
     </button>
   );
 };

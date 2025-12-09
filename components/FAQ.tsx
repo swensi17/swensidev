@@ -50,17 +50,17 @@ const FAQItem: React.FC<{
         className={`absolute inset-0 bg-white/[0.02] transition-transform duration-500 origin-left ${isHovered ? 'scale-x-100' : 'scale-x-0'}`}
       />
       
-      <div className="relative z-10 py-8 md:py-10">
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex items-start gap-6 flex-1">
+      <div className="relative z-10 py-6 md:py-10">
+        <div className="flex items-start justify-between gap-4 md:gap-6">
+          <div className="flex items-start gap-3 md:gap-6 flex-1">
             {/* Number */}
-            <span className={`text-xs font-mono tracking-widest transition-colors duration-300 pt-2 ${isHovered || isOpen ? 'text-[#FF3B30]' : 'text-neutral-600'}`}>
-              [ {num} ]
+            <span className={`text-[10px] md:text-xs font-mono tracking-widest transition-colors duration-300 pt-1 md:pt-2 ${isHovered || isOpen ? 'text-[#FF3B30]' : 'text-neutral-600'}`}>
+              [{num}]
             </span>
             
             {/* Question */}
             <div className="flex-1">
-              <h3 className={`text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight transition-colors duration-300 ${isHovered || isOpen ? 'text-white' : 'text-neutral-300'}`}>
+              <h3 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium tracking-tight transition-colors duration-300 leading-tight ${isHovered || isOpen ? 'text-white' : 'text-neutral-300'}`}>
                 {q}
               </h3>
               
@@ -74,7 +74,7 @@ const FAQItem: React.FC<{
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
               >
-                <p className="text-neutral-500 text-base md:text-lg leading-relaxed mt-4 max-w-2xl">
+                <p className="text-neutral-500 text-sm md:text-base leading-relaxed mt-3 md:mt-4 max-w-2xl">
                   {a}
                 </p>
               </motion.div>
@@ -85,9 +85,9 @@ const FAQItem: React.FC<{
           <motion.div
             animate={{ rotate: isOpen ? 45 : 0 }}
             transition={{ duration: 0.3 }}
-            className={`w-10 h-10 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${isOpen ? 'border-[#FF3B30] text-[#FF3B30]' : 'border-white/20 text-white/40'}`}
+            className={`w-8 h-8 md:w-10 md:h-10 rounded-full border flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${isOpen ? 'border-[#FF3B30] text-[#FF3B30]' : 'border-white/20 text-white/40'}`}
           >
-            <span className="text-xl leading-none">+</span>
+            <span className="text-lg md:text-xl leading-none">+</span>
           </motion.div>
         </div>
       </div>
@@ -99,7 +99,7 @@ const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-black py-24 md:py-32 relative overflow-hidden">
+    <section id="faq" className="bg-black py-16 md:py-32 relative overflow-hidden">
       {/* Background decorative element */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none">
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(255,59,48,0.03)_0%,transparent_70%)]" />
@@ -113,8 +113,8 @@ const FAQ: React.FC = () => {
       </div>
 
       {/* Header */}
-      <div className="px-6 md:px-12 mb-16 md:mb-24">
-        <div className="flex justify-between items-center text-xs tracking-[0.3em] font-mono text-neutral-600 border-b border-white/5 pb-4">
+      <div className="px-6 md:px-12 mb-10 md:mb-24">
+        <div className="flex justify-between items-center text-[10px] md:text-xs tracking-[0.3em] font-mono text-neutral-600 border-b border-white/5 pb-4">
           <span>[ 08 / 09 ]</span>
           <span>ВОПРОСЫ</span>
         </div>
@@ -130,16 +130,16 @@ const FAQ: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="text-center lg:text-left"
             >
-              <span className="text-[#FF3B30] text-xs font-mono tracking-widest block mb-6">
+              <span className="text-[#FF3B30] text-xs font-mono tracking-widest block mb-4 md:mb-6">
                 [ ЧАСТЫЕ ВОПРОСЫ ]
               </span>
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95]">
-                Вопросы<br />
-                <span className="text-neutral-600">и ответы</span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[0.95]">
+                Вопросы <span className="text-neutral-600">и ответы</span>
               </h2>
               
-              <p className="text-neutral-500 mt-8 max-w-sm text-sm leading-relaxed">
+              <p className="text-neutral-500 mt-6 md:mt-8 max-w-sm text-sm leading-relaxed mx-auto lg:mx-0">
                 Не нашёл ответ на свой вопрос? Напиши мне напрямую — отвечу в течение часа.
               </p>
               
@@ -149,11 +149,11 @@ const FAQ: React.FC = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-4 mt-8 border border-white/30 py-4 px-8 group hover:bg-white transition-all duration-300"
+                className="inline-flex items-center justify-center gap-3 mt-6 md:mt-8 border border-white/30 py-3 md:py-4 px-6 md:px-8 group hover:bg-white transition-all duration-300 w-full sm:w-auto"
               >
-                <span className="text-white text-xs font-bold tracking-widest uppercase group-hover:text-black transition-colors duration-300">НАПИСАТЬ В TELEGRAM</span>
+                <span className="text-white text-[10px] md:text-xs font-bold tracking-widest uppercase group-hover:text-black transition-colors duration-300">НАПИСАТЬ В TELEGRAM</span>
                 <svg 
-                  className="w-4 h-4 text-white group-hover:text-black group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" 
+                  className="w-3 h-3 md:w-4 md:h-4 text-white group-hover:text-black group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   stroke="currentColor" 

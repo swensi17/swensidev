@@ -87,10 +87,81 @@ const ServiceDescription: React.FC<{
 
 const Services: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
+
+  // На мобильных показываем стильную цепочку
+  if (isMobile) {
+    return (
+      <section id="services" className="relative bg-[#050505] border-t border-white/5 py-16 px-6">
+        <div className="flex justify-between items-center mb-8">
+          <span className="text-neutral-600 text-xs tracking-[0.3em] font-mono">[ 02 / 09 ]</span>
+          <span className="text-neutral-600 text-xs tracking-[0.3em] font-mono">УСЛУГИ</span>
+        </div>
+        
+        <div className="mb-12">
+          <span className="text-[#FF3B30] text-xs font-mono tracking-[0.3em] block mb-3">[ МОИ УСЛУГИ ]</span>
+          <h2 className="text-3xl font-bold tracking-tight text-white">Что я делаю</h2>
+        </div>
+        
+        {/* Timeline chain */}
+        <div className="relative">
+          {/* Vertical line */}
+          <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#FF3B30] via-white/20 to-transparent" />
+          
+          <div className="space-y-0">
+            {services.map((service, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="relative pl-12 pb-8"
+              >
+                {/* Circle node */}
+                <div className="absolute left-0 top-0 w-10 h-10 rounded-full border-2 border-[#FF3B30] bg-[#050505] flex items-center justify-center">
+                  <span className="text-[#FF3B30] font-mono text-xs font-bold">{String(index + 1).padStart(2, '0')}</span>
+                </div>
+                
+                {/* Content card */}
+                <div className="bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 p-5 relative overflow-hidden">
+                  {/* Top accent */}
+                  <div className="absolute top-0 left-0 w-16 h-[2px] bg-[#FF3B30]" />
+                  
+                  <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
+                  <p className="text-neutral-400 text-sm leading-relaxed mb-4">{service.desc}</p>
+                  
+                  {/* Features as pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {service.features.map((f, i) => (
+                      <span key={i} className="px-3 py-1 text-[10px] font-mono tracking-wider bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20 rounded-full">{f}</span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="mt-8 text-center">
+          <p className="text-neutral-500 text-xs mb-2">Готов обсудить ваш проект?</p>
+          <Button text="ОБСУДИТЬ ПРОЕКТ" />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -192,7 +263,7 @@ const ServiceNameItem: React.FC<{
   return (
     <motion.div
       style={{ color }}
-      className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium tracking-tighter leading-[0.95] text-right select-none cursor-default transition-colors duration-300 hover:text-[#FF3B30]"
+      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tighter leading-[0.95] text-right select-none cursor-default transition-colors duration-300 hover:text-[#FF3B30]"
     >
       {name}
     </motion.div>
