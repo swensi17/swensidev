@@ -196,9 +196,10 @@ def create_github_repo() -> bool:
     url = "https://api.github.com/user/repos"
     data = json.dumps({
         "name": REPO_NAME,
-        "description": "🎱 Pool Landing Page - Modern React/TypeScript Project",
+        "description": "🚀 SWENSI DEV - Full-Stack Разработчик | React + TypeScript Portfolio",
         "private": False,
-        "auto_init": False
+        "auto_init": False,
+        "homepage": f"https://{GITHUB_USERNAME}.github.io/{REPO_NAME}"
     }).encode()
     
     headers = {
@@ -245,6 +246,42 @@ def add_and_commit(root: Path) -> bool:
             return True
         log_error(f"Ошибка коммита: {e}")
         return False
+
+
+def enable_github_pages() -> bool:
+    """Включить GitHub Pages через API"""
+    import urllib.request
+    import json
+    
+    url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{REPO_NAME}/pages"
+    data = json.dumps({
+        "build_type": "workflow"
+    }).encode()
+    
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+        with urllib.request.urlopen(req) as response:
+            if response.status in [201, 204]:
+                log_success("GitHub Pages включен!")
+                return True
+    except urllib.error.HTTPError as e:
+        if e.code == 409:
+            log_warning("GitHub Pages уже включен")
+            return True
+        elif e.code == 422:
+            log_warning("GitHub Pages требует настройки workflow")
+        else:
+            log_warning(f"GitHub Pages: {e.code} - настройте вручную в Settings > Pages")
+    except Exception as e:
+        log_warning(f"GitHub Pages: {e}")
+    
+    return False
 
 
 def push_to_github(root: Path) -> bool:
@@ -360,13 +397,20 @@ def main():
     if not push_to_github(root):
         sys.exit(1)
     
-    # 5. Успех!
+    # 5. Включаем GitHub Pages
+    log_header("GITHUB PAGES")
+    enable_github_pages()
+    
+    # 6. Успех!
     log_header("ГОТОВО!")
     print(f"""
 {Colors.GREEN}{Colors.BOLD}
     ✓ Проект успешно задеплоен!
     
     📦 Репозиторий: https://github.com/{GITHUB_USERNAME}/{REPO_NAME}
+    🌐 GitHub Pages: https://{GITHUB_USERNAME}.github.io/{REPO_NAME}
+    
+    ⚠️  GitHub Pages может занять 1-2 минуты для активации
     
 {Colors.RESET}""")
 

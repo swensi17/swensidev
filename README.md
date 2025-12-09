@@ -1,20 +1,52 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+# 🚀 SWENSI DEV
+
+**Full-Stack Разработчик | Разработка под ключ**
+
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-11-FF0055?style=flat-square&logo=framer&logoColor=white)](https://framer.com/motion)
+
+[🌐 Live Demo](https://swensi17.github.io/swensidev) • [📱 Telegram](https://t.me/swensi17) • [⭐ Отзывы](https://t.me/amirjanjik)
+
 </div>
 
-# Run and deploy your AI Studio app
+---
 
-This contains everything you need to run your app locally.
+## ✨ О проекте
 
-View your app in AI Studio: https://ai.studio/apps/drive/1CwAKyhSEfC_BHPSsHwnL4x7N6p4lpGZ8
+Современное портфолио full-stack разработчика с:
+- 🌌 3D Starfield эффектами
+- 🎨 Dark mode дизайн
+- ⚡ Плавные анимации (Framer Motion)
+- 📱 Полная адаптивность
+- 🔥 Высокая производительность
 
-## Run Locally
+## 🛠 Технологии
 
-**Prerequisites:**  Node.js
+- **Frontend:** React 18, TypeScript
+- **Сборка:** Vite
+- **Анимации:** Framer Motion
+- **Стили:** Tailwind CSS
 
+## 🚀 Запуск
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev
+```
+
+## 📞 Контакты
+
+- Telegram: [@swensi17](https://t.me/swensi17)
+- Отзывы: [@amirjanjik](https://t.me/amirjanjik)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by SWENSI**
+
+</div>
