@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+const BASE_URL = import.meta.env.BASE_URL || '/';
+
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -23,7 +25,7 @@ const Hero: React.FC = () => {
         <div 
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{ 
-            backgroundImage: 'url(/image.png)',
+            backgroundImage: `url(${BASE_URL}image.png)`,
             WebkitMaskImage: `repeating-linear-gradient(
               to right,
               transparent 0px,
