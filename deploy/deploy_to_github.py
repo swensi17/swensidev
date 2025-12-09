@@ -52,7 +52,6 @@ FILES_TO_DEPLOY = [
 FOLDERS_TO_DEPLOY = [
     "components",
     ".vscode",
-    ".github",
 ]
 
 # Файлы, которые НЕ нужно деплоить
